@@ -42,6 +42,7 @@ connection.query("SELECT * FROM products AS products", function (error, results,
         }
     ]).then(function(answers) {
         var productInd = idArr.indexOf(answers.idChoice);
+        var chosenID = productArr[productInd];
         var chosenProduct = productArr[productInd];
         var chosenQuant = quantityArr[productInd];
         var chosenPrice = priceArr[productInd];
@@ -62,7 +63,13 @@ connection.query("SELECT * FROM products AS products", function (error, results,
                 }
             }
         ]).then(function(answers) {
-            subtotal = chosenPrice * answers.quantity;
+            var subtotal = chosenPrice * answers.quantity;
+            var newQuant = chosenQuant - answers.quantity;
+
+            connection.query(`UPDATE products SET stock_quantity = ${newQuant} WHERE id = ${chosenID}`, function(error, results, fields) {
+                if (error) throw error; //this doesn't work, probably don't want to have one query within another query, try separating inquirer calls into functions
+            });
+
             console.log(`Your order has been fulfilled!  That will be $${subtotal}`);
         })
     })
