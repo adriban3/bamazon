@@ -13,24 +13,25 @@ var connection = mysql.createConnection({
 var idArr = [];
 var productArr = [];
 var quantityArr = [];
+var priceArr = [];
 
 connection.connect();
 
 //code here
 var productDisplay = new Table({
-    head: ["Product ID", "Product Name", "Department Name", "Stock Quantity"],
+    head: ["Product ID", "Product Name", "Price ($)", "Department Name", "Stock Quantity"],
 });
 
 connection.query("SELECT * FROM products AS products", function (error, results, fields) {
     if (error) throw error;
     results.forEach(function(item, index) {
-        productDisplay.push([item.id, item.product_name, item.department_name, item.stock_quantity]);
+        productDisplay.push([item.id, item.product_name, item.price, item.department_name, item.stock_quantity]);
         idArr.push(item.id.toString());
         productArr.push(item.product_name);
         quantityArr.push(item.stock_quantity);
+        priceArr.push(item.price);
     });
     console.log(productDisplay.toString());
-    console.log(idArr);
 
     inquirer.prompt([
         {
@@ -43,6 +44,7 @@ connection.query("SELECT * FROM products AS products", function (error, results,
         var productInd = idArr.indexOf(answers.idChoice);
         var chosenProduct = productArr[productInd];
         var chosenQuant = quantityArr[productInd];
+        var chosenPrice = priceArr[productInd];
 
         inquirer.prompt([
             {
@@ -60,7 +62,8 @@ connection.query("SELECT * FROM products AS products", function (error, results,
                 }
             }
         ]).then(function(answers) {
-            console.log("Your order has been fulfilled!");
+            subtotal = chosenPrice * answers.quantity;
+            console.log(`Your order has been fulfilled!  That will be $${subtotal}`);
         })
     })
 });
