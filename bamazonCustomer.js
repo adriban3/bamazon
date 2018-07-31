@@ -100,7 +100,7 @@ function Questions() {
             subtotal = chosenPrice * answers.quantity;
             newQuant = chosenQuant - answers.quantity;
 
-            changeQuant().then(displayEnd()).then(function() {console.log(`Your order has been fulfilled!  That will be $${subtotal}`)});
+            changeQuant().then(displayEnd()).then(function() {console.log(`Your order has been fulfilled!  That will be $${subtotal}`)}); //just remove .thens and uncomment below to return semi-functionality
 
             // displayEnd();
 
