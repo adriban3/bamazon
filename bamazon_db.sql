@@ -28,5 +28,3 @@ SELECT * FROM products
 
 
 
-
-
