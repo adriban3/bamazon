@@ -58,3 +58,52 @@ function lowInv() {
         connection.end();
     })
 };
+
+function addInv() {
+
+    var productArr = [];
+    var quantityArr = [];
+    var chosenProduct;
+    var chosenQuantity;
+
+    connection.query("SELECT * FROM products", function (error, results, fields) {
+        if (error) throw error;
+        results.forEach(function(item, index) {
+            productArr.push(item.product_name);
+            quantityArr.push(item.stock_quantity);
+        });
+        
+        inquirer.prompt([
+            {
+                name: "product",
+                type: "list",
+                message: "Which product's stock would you like to update?",
+                choices: productArr
+            },
+
+            {
+                name: "number",
+                type: "number",
+                message: "How many would you like to add",
+                validate(number) {
+                    if (number === NaN) {
+                        return false;
+                    }
+
+                    else {
+                        console.log("\nPlease choose a valid number.\n".red);
+                    }
+                }
+            }
+        ]).then(function(answers) {
+            console.log(answers);
+            // chosenProduct = answers.product;
+            // chosenQuantity = quantityArr[productArr.indexOf(chosenProduct)];
+            // newQuant = chosenQuantity + answers.number;
+            // connection.query(`UPDATE products SET stock_quantity = ${newQuant} WHERE product_name = ${chosenProduct}`, function(err, res, fields) {
+            //     if (err) throw err;
+            //     console.log(res);
+            // })
+        })
+    });
+}
