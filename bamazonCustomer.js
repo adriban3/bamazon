@@ -22,14 +22,13 @@ var chosenProduct;
 var chosenQuant;
 var chosenPrice;
 
-connection.connect();
-
 //code here
 var productDisplay = new Table({
     head: ["Product ID", "Product Name", "Price ($)", "Department Name", "Stock Quantity"],
 });
 
 function displayInit() {
+    // connection.connect();
     connection.query("SELECT * FROM products AS products", function (error, results, fields) {
     if (error) throw error;
         results.forEach(function(item, index) {
@@ -40,11 +39,13 @@ function displayInit() {
             priceArr.push(item.price);
         });
         console.log(productDisplay.toString());
+        // connection.end();
         Questions();
     });
 }
 
 function displayEnd() {
+    // connection.connect();
     connection.query("SELECT * FROM products AS products", function (error, results, fields) {
     if (error) throw error;
         results.forEach(function(item, index) {
@@ -55,14 +56,18 @@ function displayEnd() {
             priceArr.push(item.price);
         });
         console.log(productDisplay.toString());
+        console.log(`Your order has been fulfilled!  That will be $${subtotal}`);
         connection.end();
     });
 }
 
 function changeQuant() {
+    // connection.connect();
     connection.query(`UPDATE products SET stock_quantity = ${newQuant} WHERE id = ${chosenID}`, function(error, results, fields) {
-        if (error) throw error; //this doesn't work, probably don't want to have one query within another query, try separating inquirer calls into functions
+        if (error) throw error;
     });
+    // connection.end();
+    displayEnd();
 }
 
 function Questions() {
@@ -100,11 +105,7 @@ function Questions() {
             subtotal = chosenPrice * answers.quantity;
             newQuant = chosenQuant - answers.quantity;
 
-            changeQuant().then(displayEnd()).then(function() {console.log(`Your order has been fulfilled!  That will be $${subtotal}`)}); //just remove .thens and uncomment below to return semi-functionality
-
-            // displayEnd();
-
-            // console.log(`Your order has been fulfilled!  That will be $${subtotal}`);
+            changeQuant();
         })
     })
 };
