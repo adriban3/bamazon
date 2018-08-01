@@ -30,7 +30,7 @@ var productDisplay = new Table({
 function displayInit() {
     // connection.connect();
     connection.query("SELECT * FROM products AS products", function (error, results, fields) {
-    if (error) throw error;
+        if (error) throw error;
         results.forEach(function(item, index) {
             productDisplay.push([item.id, item.product_name, item.price, item.department_name, item.stock_quantity]);
             idArr.push(item.id.toString());
