@@ -44,5 +44,17 @@ function viewProd() {
             productDisplay.push([item.id, item.product_name, item.price, item.department_name, item.stock_quantity])
         })
         console.log(productDisplay.toString());
+        connection.end();
+    })
+};
+
+function lowInv() {
+    connection.query("SELECT * FROM products WHERE stock_quantity < 5", function(err, res, fields) {
+        if (err) throw err;
+        res.forEach(function(item, ind) {
+            productDisplay.push([item.id, item.product_name, item.price, item.department_name, item.stock_quantity])
+        })
+        console.log(productDisplay.toString());
+        connection.end();
     })
 };
