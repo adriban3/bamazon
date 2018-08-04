@@ -83,27 +83,90 @@ function addInv() {
 
             {
                 name: "number",
-                type: "number",
+                type: "input-validated",
                 message: "How many would you like to add",
                 validate(number) {
-                    if (number === NaN) {
-                        return false;
+                    if (!/\d/.test(number)) {
+                        console.log("\nPlease input a valid number.\n".red);
+                        return;
                     }
-
-                    else {
-                        console.log("\nPlease choose a valid number.\n".red);
-                    }
+                    return true;
                 }
             }
         ]).then(function(answers) {
-            console.log(answers);
-            // chosenProduct = answers.product;
-            // chosenQuantity = quantityArr[productArr.indexOf(chosenProduct)];
-            // newQuant = chosenQuantity + answers.number;
-            // connection.query(`UPDATE products SET stock_quantity = ${newQuant} WHERE product_name = ${chosenProduct}`, function(err, res, fields) {
-            //     if (err) throw err;
-            //     console.log(res);
-            // })
+            chosenProduct = answers.product;
+            chosenQuantity = quantityArr[productArr.indexOf(chosenProduct)];
+            newQuant = chosenQuantity + answers.number;
+            connection.query(`UPDATE products SET stock_quantity = ${newQuant} WHERE product_name = "${chosenProduct}"`, function(err, res, fields) {
+                if (err) throw err;
+                
+                connection.query("SELECT * FROM products", function(err, res, fields) {
+                    if (err) throw err;
+                    res.forEach(function(item, ind) {
+                        productDisplay.push([item.id, item.product_name, item.price, item.department_name, item.stock_quantity])
+                    })
+                    console.log(productDisplay.toString());
+                    console.log("You've successfully updated your stock!".green);
+                    connection.end();
+                })
+            })
         })
     });
+}
+
+function addProd() {
+    //inquirer for product_name, price, department_name, stock_quantity
+    inquirer.prompt([
+        {
+            name: "product",
+            type: "input",
+            message: "New product name"
+        },
+
+        {
+            name: "price",
+            type: "input",
+            message: "New product price", 
+            validate(price) {
+                if (!/\d/.test(price)) {
+                    console.log("\nPlease input a valid number.\n".red);
+                    return;
+                }
+                return true;
+            }
+        },
+
+        {
+            name: "dept",
+            type: "input",
+            message: "New product department"
+        },
+
+        {
+            name: "stock",
+            type: "input-validated",
+            message: "New product quantity",
+            validate(stock) {
+                if (!/\d/.test(stock)) {
+                    console.log("\nPlease input a valid number.\n".red);
+                    return;
+                }
+                return true;
+            }
+        }
+    ]).then(function(answers) {
+        connection.query(`INSERT INTO products (product_name, price, department_name, stock_quantity) VALUES ("${answers.product}", ${answers.price}, "${answers.dept}", ${answers.stock})`, function(err, res, fields) {
+            if (err) throw err;
+
+            connection.query("SELECT * FROM products", function(err, res, fields) {
+                if (err) throw err;
+                res.forEach(function(item, ind) {
+                    productDisplay.push([item.id, item.product_name, item.price, item.department_name, item.stock_quantity])
+                })
+                console.log(productDisplay.toString());
+                console.log("You've successfully added a new product!".green);
+                connection.end();
+            })
+        })
+    })
 }
